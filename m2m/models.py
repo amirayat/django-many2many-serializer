@@ -6,5 +6,5 @@ class Tag(models.Model):
     text = models.CharField(max_length=100)
 
 class Post(models.Model):
-    tag = models.ManyToManyField(Tag)
+    tag = models.ManyToManyField(Tag, related_name='poststag')
     text = models.CharField(max_length=100)

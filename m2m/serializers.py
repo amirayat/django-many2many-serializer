@@ -2,12 +2,31 @@ from rest_framework import serializers
 from rest_framework.exceptions import NotFound
 from m2m.models import *
 
+class MyTagSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        ordering = ['-id']
+        model = Tag
+        fields = '__all__'
+
+        
+class MyPostSerializer(serializers.ModelSerializer):
+    tag = serializers.ListField()
+
+    class Meta: 
+        model = Post
+        fields = '__all__'
+    
+    def get_tag(self, obj):
+        query = obj.tag.all()
+        return MyTagSerializer(query, many=True).data
+
 
 class TagSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(required=True)
     class Meta:
         model = Tag
-        fields = '__all__'
+        fields = ('id', 'name',)#'__all__'
 
 
 class PostSerializer(serializers.HyperlinkedModelSerializer):
@@ -45,8 +64,8 @@ class WritablePostSerializer(serializers.HyperlinkedModelSerializer):
         model = Post
         fields = '__all__'
 
-    def unpack(self, s: set):
-        return ",".join(map(str, s))
+    def unpack(self, ADEL: set):
+        return ",".join(map(str, ADEL))
 
     def create(self, validated_data):
         entered_tags = validated_data.pop('tag')
